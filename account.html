@@ -1,0 +1,1189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Account</title>
+  <style>
+    /* General Styles */
+    body {
+      font-family: 'Arial', sans-serif;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(135deg, #0b0e11, #1e2329);
+      color: white;
+      min-height: 100vh;
+      overflow-x: hidden;
+      transition: background 0.3s ease, color 0.3s ease;
+    }
+
+    body.light-theme {
+      background: linear-gradient(135deg, #f0f0f0, #e0e0e0);
+      color: #333;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 20px auto;
+      padding: 10px;
+      text-align: center;
+    }
+
+    h1 {
+      color: #f0b90b;
+      font-size: 2rem;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    }
+
+    .secret-phase, .verify-phase, .account-info, .crypto-list, .crypto-actions {
+      background: rgba(30, 35, 41, 0.8);
+      padding: 15px;
+      border-radius: 15px;
+      margin: 15px 0;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      transition: background 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    body.light-theme .secret-phase,
+    body.light-theme .verify-phase,
+    body.light-theme .account-info,
+    body.light-theme .crypto-list,
+    body.light-theme .crypto-actions {
+      background: rgba(255, 255, 255, 0.8);
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    }
+
+    .secret-phase p {
+      user-select: all;
+      padding: 10px;
+      background: #2b3139;
+      border-radius: 5px;
+      font-size: 16px;
+      margin: 10px 0;
+      transition: background 0.3s ease;
+    }
+
+    body.light-theme .secret-phase p {
+      background: #e0e0e0;
+      color: #333;
+    }
+
+    .secret-phase button, .verify-phase button, .crypto-actions button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      background: linear-gradient(45deg, #00ff88, #00b8ff);
+      color: #1e3c72;
+      cursor: pointer;
+      font-size: 14px;
+      margin: 10px;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    body.light-theme .secret-phase button,
+    body.light-theme .verify-phase button,
+    body.light-theme .crypto-actions button {
+      background: linear-gradient(45deg, #00b8ff, #00ff88);
+      color: white;
+    }
+
+    .secret-phase button:hover, .verify-phase button:hover, .crypto-actions button:hover {
+      opacity: 0.9;
+      transform: translateY(-2px) scale(1.05);
+    }
+
+    .verify-phase input {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #2b3139;
+      border-radius: 5px;
+      background: #2b3139;
+      color: white;
+      transition: background 0.3s ease, border 0.3s ease;
+    }
+
+    body.light-theme .verify-phase input {
+      background: #e0e0e0;
+      border: 1px solid #ccc;
+      color: #333;
+    }
+
+    .account-info img {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      margin-bottom: 10px;
+      cursor: pointer;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    .account-info img:hover {
+      transform: scale(1.1);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+    }
+
+    .account-info .balance {
+      font-size: 20px;
+      color: #00ff88;
+      margin: 10px 0;
+    }
+
+    .search-bar {
+      margin: 15px 0;
+    }
+
+    .search-bar input {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #2b3139;
+      border-radius: 5px;
+      background: #2b3139;
+      color: white;
+      transition: background 0.3s ease, border 0.3s ease;
+    }
+
+    body.light-theme .search-bar input {
+      background: #e0e0e0;
+      border: 1px solid #ccc;
+      color: #333;
+    }
+
+    .crypto-list .coins {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+      gap: 10px;
+      justify-content: center;
+    }
+
+    .crypto-list .coin {
+      background: #2b3139;
+      padding: 10px;
+      border-radius: 10px;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    body.light-theme .crypto-list .coin {
+      background: #e0e0e0;
+      color: #333;
+    }
+
+    .crypto-list .coin:hover {
+      background: #00ff88;
+      color: #1e3c72;
+      transform: translateY(-5px) scale(1.05);
+    }
+
+    .crypto-list .coin img {
+      width: 40px;
+      height: 40px;
+    }
+
+    .crypto-list .coin .change {
+      font-size: 12px;
+    }
+
+    .crypto-list .coin .change.positive {
+      color: #00ff88;
+    }
+
+    .crypto-list .coin .change.negative {
+      color: #ff4444;
+    }
+
+     .crypto-actions {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 90%;
+      max-width: 400px;
+      background: rgba(30, 35, 41, 0.95);
+      padding: 25px;
+      border-radius: 20px;
+      box-shadow: 0 15px 50px rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(15px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      z-index: 1000;
+      transition: all 0.4s ease;
+      animation: fadeIn 0.4s ease;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translate(-50%, -48%); }
+      to { opacity: 1; transform: translate(-50%, -50%); }
+    }
+    
+    body.light-theme .crypto-actions {
+      background: rgba(255, 255, 255, 0.95);
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      box-shadow: 0 15px 50px rgba(0, 0, 0, 0.2);
+    }
+    
+    .crypto-actions h2 {
+      color: #f0b90b;
+      margin-bottom: 20px;
+      text-align: center;
+      font-size: 1.8rem;
+      text-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    }
+    
+    body.light-theme .crypto-actions h2 {
+      color: #f0b90b;
+      text-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+    
+    /* Enhanced Buttons */
+    .crypto-actions button {
+      width: 100%;
+      margin: 12px 0;
+      padding: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+      border: none;
+      border-radius: 12px;
+      background: linear-gradient(45deg, #00ff88, #00b8ff);
+      color: #1e3c72;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .crypto-actions button::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: all 0.5s ease;
+    }
+    
+    .crypto-actions button:hover::before {
+      left: 100%;
+    }
+    
+    .crypto-actions button:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 25px rgba(0, 0, 0, 0.4);
+    }
+    
+    .crypto-actions button.back {
+      background: linear-gradient(45deg, #ff4444, #ff8c00);
+      color: white;
+    }
+    
+    .crypto-actions button span:last-child {
+      font-size: 20px;
+    }
+    
+    /* Enhanced Send Section */
+    #send-section .input-group {
+      background: rgba(43, 49, 57, 0.7);
+      border-radius: 12px;
+      padding: 15px;
+      margin-bottom: 20px;
+      box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.2);
+      transition: all 0.3s ease;
+    }
+    
+    body.light-theme #send-section .input-group {
+      background: rgba(224, 224, 224, 0.7);
+      box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    #send-section .input-group:focus-within {
+      box-shadow: inset 0 2px 10px rgba(0, 255, 136, 0.2);
+      border: 1px solid rgba(0, 255, 136, 0.3);
+    }
+    
+    #send-section .input-group img {
+      width: 30px;
+      height: 30px;
+      margin-right: 15px;
+      filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.3));
+    }
+    
+    #send-section .input-group input {
+      background: transparent;
+      border: none;
+      color: white;
+      font-size: 16px;
+      width: 100%;
+      outline: none;
+    }
+    
+    body.light-theme #send-section .input-group input {
+      color: #333;
+    }
+    
+    /* Enhanced Receive Section */
+    #receive-section .input-group {
+      display: flex;
+      align-items: center;
+      background: rgba(43, 49, 57, 0.7);
+      border-radius: 12px;
+      padding: 15px;
+      margin-bottom: 20px;
+      box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.2);
+    }
+    
+    body.light-theme #receive-section .input-group {
+      background: rgba(224, 224, 224, 0.7);
+      box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    #receive-section .input-group img {
+      width: 30px;
+      height: 30px;
+      margin-right: 15px;
+      filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.3));
+    }
+    
+    #receive-section .input-group p {
+      flex: 1;
+      margin: 0;
+      font-family: monospace;
+      font-size: 14px;
+      word-break: break-all;
+    }
+    
+    #receive-section .copy-icon {
+      background: #f0b90b;
+      color: #1e3c72;
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      cursor: pointer;
+      margin-left: 10px;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    }
+    
+    #receive-section .copy-icon:hover {
+      transform: scale(1.1);
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
+    }
+    
+    #receive-section .qr-code {
+      background: white;
+      padding: 15px;
+      border-radius: 15px;
+      display: inline-block;
+      margin: 20px auto;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+    }
+    
+    #receive-section .qr-code img {
+      width: 200px;
+      height: 200px;
+    }
+    
+    /* Enhanced Swap Section */
+    #swap-section .input-group {
+      background: rgba(43, 49, 57, 0.7);
+      border-radius: 12px;
+      padding: 15px;
+      margin-bottom: 20px;
+      box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.2);
+    }
+    
+    body.light-theme #swap-section .input-group {
+      background: rgba(224, 224, 224, 0.7);
+      box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    #swap-section .input-group img {
+      width: 30px;
+      height: 30px;
+      margin-right: 15px;
+      filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.3));
+    }
+    
+    #swap-section .input-group select,
+    #swap-section .input-group input {
+      background: transparent;
+      border: none;
+      color: white;
+      font-size: 16px;
+      width: 100%;
+      outline: none;
+      appearance: none;
+    }
+    
+    body.light-theme #swap-section .input-group select,
+    body.light-theme #swap-section .input-group input {
+      color: #333;
+    }
+    
+    #swap-section .input-group::after {
+      content: '▼';
+      font-size: 12px;
+      color: #f0b90b;
+      position: absolute;
+      right: 30px;
+      pointer-events: none;
+    }
+    
+    #swap-section .swap-bar {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 20px 0;
+    }
+    
+    #swap-section .swap-bar span {
+      background: #f0b90b;
+      color: #1e3c72;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      font-size: 20px;
+      cursor: pointer;
+      transition: all 0.5s ease;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    }
+    
+    #swap-section .swap-bar span:hover {
+      transform: rotate(180deg) scale(1.1);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+    }
+    
+    /* Animation for sections */
+    @keyframes slideIn {
+      from { transform: translateY(20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    
+    #send-section, #receive-section, #swap-section {
+      animation: slideIn 0.4s ease;
+    }
+    .copy-icon {
+      cursor: pointer;
+      margin-left: 10px;
+      font-size: 18px;
+    }
+
+    /* Theme Toggle */
+    .theme-toggle {
+      position: fixed;
+      top: 15px;
+      right: 15px;
+      background: rgba(30, 35, 41, 0.8);
+      padding: 8px;
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      transition: background 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    body.light-theme .theme-toggle {
+      background: rgba(255, 255, 255, 0.8);
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .theme-toggle img {
+      width: 20px;
+      height: 20px;
+    }
+
+    /* Back to Market Button */
+    .back-to-market {
+      position: fixed;
+      bottom: 15px;
+      right: 15px;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 5px;
+      background: linear-gradient(45deg, #00ff88, #00b8ff);
+      color: #1e3c72;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    .back-to-market:hover {
+      opacity: 0.9;
+      transform: translateY(-2px);
+    }
+
+    /* Mobile Responsiveness */
+    @media (max-width: 480px) {
+      h1 {
+        font-size: 1.5rem;
+      }
+
+      .secret-phase p {
+        font-size: 14px;
+      }
+
+      .crypto-list .coin {
+        width: 80px;
+      }
+
+      .crypto-actions {
+        width: 95%;
+      }
+
+      .theme-toggle {
+        top: 10px;
+        right: 10px;
+      }
+
+      .back-to-market {
+        bottom: 10px;
+        right: 10px;
+      }
+    }
+    .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    margin-bottom: 20px;
+  }
+  
+  .kyc-button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    background: linear-gradient(45deg, #f0b90b, #f8d12f);
+    color: #1e3c72;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  }
+  
+  .kyc-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+  }
+  
+/* Update the verified badge style in account.html */
+.verified-badge {
+  display: inline-flex;
+  align-items: center;
+  background: #00ff88;
+  border-radius: 20px;
+  padding: 3px 8px;
+  color: white;
+  font-weight: bold;
+  font-size: 12px;
+  margin-left: 10px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  vertical-align: middle;
+}
+
+.verified-badge::before {
+  content: "✓";
+  margin-right: 3px;
+}
+
+.account-info {
+  position: relative;
+}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Secret Phase Section -->
+    <div class="secret-phase" id="secret-phase">
+      <h1>Your Secret Phrase</h1>
+      <p id="secret-words"></p>
+      <button onclick="copySecretPhrase()">Copy Secret Phrase</button>
+      <button onclick="showVerifyPhase()">Next</button>
+    </div>
+
+    <!-- Verify Phase Section -->
+    <div class="verify-phase" id="verify-phase" style="display: none;">
+      <h1>Verify Secret Phrase</h1>
+      <p id="verify-instructions"></p>
+      <div id="verify-inputs"></div>
+      <button onclick="verifySecretPhrase()">Verify</button>
+    </div>
+    <div class="header">
+      <h1>Your Crypto Wallet</h1>
+      <button id="kyc-button" class="kyc-button" onclick="goToKYCPage()">Complete KYC</button>
+    </div>
+    <script>
+      function goToKYCPage() {
+        window.location.href = "kyc.html";
+      }
+    </script>
+    <!-- Account Information Section -->
+    <div class="account-info" id="account-info" style="display: none;">
+      <img id="profile-icon" src="images/profile.png" alt="Profile Icon" onclick="uploadImage()">
+      <h2 id="uid"></h2>
+      <div class="balance">Balance: $0.00</div>
+      <div class="search-bar">
+        <input type="text" id="search-crypto" placeholder="Search Cryptos..." oninput="filterCryptos()">
+      </div>
+      <div class="crypto-list" id="crypto-list">
+        <h2>Cryptos</h2>
+        <div class="coins" id="coins"></div>
+      </div>
+    </div>
+
+    <!-- Crypto Actions Section -->
+    <div class="crypto-actions" id="crypto-actions">
+      <h2 id="crypto-name"></h2>
+      <button class="send" onclick="showSendSection()">
+        <span>Send</span>
+        <span>📤</span>
+      </button>
+      <button class="receive" onclick="showReceiveSection()">
+        <span>Receive</span>
+        <span>📥</span>
+      </button>
+      <button class="swap" onclick="showSwapSection()">
+        <span>Swap</span>
+        <span>🔄</span>
+      </button>
+      <button class="back" onclick="showCryptoList()">Back</button>
+    </div>
+
+    <!-- Send Section -->
+    <div class="crypto-actions" id="send-section" style="display: none;">
+      <h2>Send <span id="send-crypto-name"></span></h2>
+      <div class="input-group">
+        <img id="send-crypto-logo" src="" alt="Crypto Logo">
+        <input type="number" id="send-amount" placeholder="Amount">
+      </div>
+      <div class="input-group">
+        <img src="images/btc.png" alt="Address Icon">
+        <input type="text" id="send-address" placeholder="Recipient Address">
+      </div>
+      <button onclick="sendCrypto()">Send</button>
+      <button class="back" onclick="goBackToCryptoActions()">Back</button>
+    </div>
+
+    <!-- Receive Section -->
+    <div class="crypto-actions" id="receive-section" style="display: none;">
+      <h2>Receive <span id="receive-crypto-name"></span></h2>
+      <div class="input-group">
+        <img id="receive-crypto-logo" src="" alt="Crypto Logo">
+        <p id="deposit-address"></p>
+        <span class="copy-icon" onclick="copyAddress()">📋</span>
+      </div>
+      <div class="qr-code" id="qr-code">
+        <img id="qr-image" src="" alt="QR Code">
+      </div>
+      <button class="back" onclick="goBackToCryptoActions()">Back</button>
+    </div>
+
+    <!-- Swap Section -->
+    <div class="crypto-actions swap-section" id="swap-section" style="display: none;">
+      <h2>Swap Crypto</h2>
+      <div class="input-group">
+        <img id="swap-from-logo" src="" alt="From Crypto Logo">
+        <select id="swap-from">
+          <option value="btc">Bitcoin (BTC)</option>
+          <option value="eth">Ethereum (ETH)</option>
+          <option value="bnb">Binance Coin (BNB)</option>
+          <option value="ada">Cardano (ADA)</option>
+          <option value="sol">Solana (SOL)</option>
+          <option value="xrp">Ripple (XRP)</option>
+          <option value="doge">Dogecoin (DOGE)</option>
+          <option value="dot">Polkadot (DOT)</option>
+          <option value="uni">Uniswap (UNI)</option>
+          <option value="link">Chainlink (LINK)</option>
+          <option value="ltc">Litecoin (LTC)</option>
+          <option value="bch">Bitcoin Cash (BCH)</option>
+          <option value="matic">Polygon (MATIC)</option>
+          <option value="xlm">Stellar (XLM)</option>
+          <option value="vet">VeChain (VET)</option>
+          <option value="trx">TRON (TRX)</option>
+          <option value="ftt">FTX Token (FTT)</option>
+          <option value="atom">Cosmos (ATOM)</option>
+          <option value="xtz">Tezos (XTZ)</option>
+          <option value="usdt">USDT</option>
+          <!-- Additional Coins -->
+          <option value="avax">Avalanche (AVAX)</option>
+          <option value="algo">Algorand (ALGO)</option>
+          <option value="neo">NEO (NEO)</option>
+          <option value="dash">Dash (DASH)</option>
+          <option value="zec">Zcash (ZEC)</option>
+          <option value="xmr">Monero (XMR)</option>
+          <option value="eos">EOS (EOS)</option>
+          <option value="iota">IOTA (MIOTA)</option>
+          <option value="waves">Waves (WAVES)</option>
+          <option value="hbar">Hedera (HBAR)</option>
+          <option value="icp">Internet Computer (ICP)</option>
+          <option value="theta">Theta (THETA)</option>
+          <option value="fil">Filecoin (FIL)</option>
+          <option value="xtz">Tezos (XTZ)</option>
+          <option value="klay">Klaytn (KLAY)</option>
+          <option value="zil">Zilliqa (ZIL)</option>
+          <option value="enj">Enjin (ENJ)</option>
+          <option value="bat">Basic Attention Token (BAT)</option>
+          <option value="mana">Decentraland (MANA)</option>
+          <option value="sand">The Sandbox (SAND)</option>
+        </select>
+      </div>
+      <div class="swap-bar">
+        <span onclick="swapDirection()">↕️</span>
+      </div>
+      <div class="input-group">
+        <img id="swap-to-logo" src="" alt="To Crypto Logo">
+        <select id="swap-to">
+          <option value="eth">Ethereum (ETH)</option>
+          <option value="btc">Bitcoin (BTC)</option>
+          <option value="bnb">Binance Coin (BNB)</option>
+          <option value="ada">Cardano (ADA)</option>
+          <option value="sol">Solana (SOL)</option>
+          <option value="xrp">Ripple (XRP)</option>
+          <option value="doge">Dogecoin (DOGE)</option>
+          <option value="dot">Polkadot (DOT)</option>
+          <option value="uni">Uniswap (UNI)</option>
+          <option value="link">Chainlink (LINK)</option>
+          <option value="ltc">Litecoin (LTC)</option>
+          <option value="bch">Bitcoin Cash (BCH)</option>
+          <option value="matic">Polygon (MATIC)</option>
+          <option value="xlm">Stellar (XLM)</option>
+          <option value="vet">VeChain (VET)</option>
+          <option value="trx">TRON (TRX)</option>
+          <option value="ftt">FTX Token (FTT)</option>
+          <option value="atom">Cosmos (ATOM)</option>
+          <option value="xtz">Tezos (XTZ)</option>
+          <option value="usdt">USDT</option>
+          <!-- Additional Coins -->
+          <option value="avax">Avalanche (AVAX)</option>
+          <option value="algo">Algorand (ALGO)</option>
+          <option value="neo">NEO (NEO)</option>
+          <option value="dash">Dash (DASH)</option>
+          <option value="zec">Zcash (ZEC)</option>
+          <option value="xmr">Monero (XMR)</option>
+          <option value="eos">EOS (EOS)</option>
+          <option value="iota">IOTA (MIOTA)</option>
+          <option value="waves">Waves (WAVES)</option>
+          <option value="hbar">Hedera (HBAR)</option>
+          <option value="icp">Internet Computer (ICP)</option>
+          <option value="theta">Theta (THETA)</option>
+          <option value="fil">Filecoin (FIL)</option>
+          <option value="xtz">Tezos (XTZ)</option>
+          <option value="klay">Klaytn (KLAY)</option>
+          <option value="zil">Zilliqa (ZIL)</option>
+          <option value="enj">Enjin (ENJ)</option>
+          <option value="bat">Basic Attention Token (BAT)</option>
+          <option value="mana">Decentraland (MANA)</option>
+          <option value="sand">The Sandbox (SAND)</option>
+        </select>
+      </div>
+      <div class="input-group">
+        <img src="images/usdt.png" alt="Amount Icon">
+        <input type="number" id="swap-amount" placeholder="Amount">
+      </div>
+      <button onclick="swapCrypto()">Swap</button>
+      <button class="back" onclick="goBackToCryptoActions()">Back</button>
+    </div>
+  </div>
+
+  <!-- Back to Market Button -->
+  <button class="back-to-market" onclick="goToMarketPage()">Back to Market</button>
+
+  <!-- Theme Toggle -->
+  <div class="theme-toggle" onclick="toggleTheme()">
+    <img src="images/theme-icon.png" alt="Theme Toggle">
+  </div>
+
+  <script>
+    // Add this function to handle the redirection
+    function goToMarketPage() {
+      window.location.href = "market.html"; // Redirect to market.html
+    }
+
+    // Manually added secret phrase
+    const secretWords = [
+      "apple", "banana", "cherry", "date", "elderberry", "fig",
+      "grape", "honeydew", "kiwi", "lemon", "mango", "nectarine"
+    ];
+
+    // Display the secret phrase
+    document.getElementById('secret-words').textContent = secretWords.join(' ');
+
+    // Copy secret phrase to clipboard
+    function copySecretPhrase() {
+      navigator.clipboard.writeText(secretWords.join(' ')).then(() => {
+        alert('Secret phrase copied to clipboard!');
+      });
+    }
+
+    // Show verify phase
+    function showVerifyPhase() {
+      document.getElementById('secret-phase').style.display = 'none';
+      document.getElementById('verify-phase').style.display = 'block';
+
+      // Randomly select 6 positions from the secret phrase
+      const selectedIndices = [];
+      while (selectedIndices.length < 6) {
+        const randomIndex = Math.floor(Math.random() * 12);
+        if (!selectedIndices.includes(randomIndex)) {
+          selectedIndices.push(randomIndex);
+        }
+      }
+
+      // Display instructions and input fields
+      const instructions = selectedIndices.map(index => `Word ${index + 1}`).join(', ');
+      document.getElementById('verify-instructions').textContent = `Enter the following words: ${instructions}`;
+
+      const verifyInputs = document.getElementById('verify-inputs');
+      verifyInputs.innerHTML = selectedIndices.map(index => `
+        <input type="text" id="word-${index}" placeholder="Word ${index + 1}">
+      `).join('');
+    }
+
+    // Verify secret phrase
+    function verifySecretPhrase() {
+      const selectedIndices = Array.from(document.querySelectorAll('#verify-inputs input')).map(input => {
+        const id = input.id.split('-')[1];
+        return parseInt(id);
+      });
+
+      const valid = selectedIndices.every(index => {
+        const enteredWord = document.getElementById(`word-${index}`).value;
+        return enteredWord === secretWords[index];
+      });
+
+      if (valid) {
+        localStorage.setItem('verified', 'true');
+        const uid = generateUID();
+        localStorage.setItem('uid', uid);
+        document.getElementById('verify-phase').style.display = 'none';
+        document.getElementById('account-info').style.display = 'block';
+        document.getElementById('uid').textContent = `UID: ${uid}`;
+        loadCryptos();
+      } else {
+        alert('Invalid secret phrase!');
+      }
+    }
+
+    // Generate a random UID
+    function generateUID() {
+      const uid = 'UID-' + Math.floor(100000 + Math.random() * 900000);
+      return uid;
+    }
+
+    // Load cryptos with real-time prices
+    async function loadCryptos() {
+      const coins = [
+        { id: 'bitcoin', symbol: 'btc', name: 'Bitcoin', logo: 'images/btc.png' },
+        { id: 'ethereum', symbol: 'eth', name: 'Ethereum', logo: 'images/eth.png' },
+        { id: 'tether', symbol: 'usdt', name: 'USDT', logo: 'images/usdt.png' },
+        { id: 'binancecoin', symbol: 'bnb', name: 'Binance Coin', logo: 'images/bnb.png' },
+        { id: 'solana', symbol: 'sol', name: 'Solana', logo: 'images/sol.png' },
+        { id: 'tron', symbol: 'trx', name: 'TRON', logo: 'images/trx.png' },
+        { id: 'ripple', symbol: 'xrp', name: 'Ripple', logo: 'images/xrp.png' },
+        { id: 'cardano', symbol: 'ada', name: 'Cardano', logo: 'images/ada.png' }, 
+        { id: 'bitcoin-cash', symbol: 'bch', name: 'Bitcoin Cash', logo: 'images/bch.png' },
+        { id: 'dogecoin', symbol: 'doge', name: 'Dogecoin', logo: 'images/doge.png' },
+        { id: 'polkadot', symbol: 'dot', name: 'Polkadot', logo: 'images/dot.png' },
+        { id: 'uniswap', symbol: 'uni', name: 'Uniswap', logo: 'images/uni.png' },
+        { id: 'chainlink', symbol: 'link', name: 'Chainlink', logo: 'images/link.png' },
+        { id: 'litecoin', symbol: 'ltc', name: 'Litecoin', logo: 'images/ltc.png' },
+        
+        { id: 'polygon', symbol: 'matic', name: 'Polygon', logo: 'images/matic.png' },
+        { id: 'stellar', symbol: 'xlm', name: 'Stellar', logo: 'images/xlm.png' },
+        { id: 'vechain', symbol: 'vet', name: 'VeChain', logo: 'images/vet.png' },
+       
+        { id: 'ftx-token', symbol: 'ftt', name: 'FTX Token', logo: 'images/ftt.png' },
+        { id: 'cosmos', symbol: 'atom', name: 'Cosmos', logo: 'images/atom.png' },
+        { id: 'tezos', symbol: 'xtz', name: 'Tezos', logo: 'images/xtz.png' },
+       
+        // Additional Coins
+        { id: 'avalanche-2', symbol: 'avax', name: 'Avalanche', logo: 'images/avax.png' },
+        { id: 'algorand', symbol: 'algo', name: 'Algorand', logo: 'images/algo.png' },
+        { id: 'neo', symbol: 'neo', name: 'NEO', logo: 'images/neo.png' },
+        { id: 'dash', symbol: 'dash', name: 'Dash', logo: 'images/dash.png' },
+        { id: 'zcash', symbol: 'zec', name: 'Zcash', logo: 'images/zec.png' },
+        { id: 'monero', symbol: 'xmr', name: 'Monero', logo: 'images/xmr.png' },
+        { id: 'eos', symbol: 'eos', name: 'EOS', logo: 'images/eos.png' },
+        { id: 'iota', symbol: 'iota', name: 'IOTA', logo: 'images/iota.png' },
+        { id: 'waves', symbol: 'waves', name: 'Waves', logo: 'images/waves.png' },
+        { id: 'hedera-hashgraph', symbol: 'hbar', name: 'Hedera', logo: 'images/hbar.png' },
+        { id: 'internet-computer', symbol: 'icp', name: 'Internet Computer', logo: 'images/icp.png' },
+        { id: 'theta-token', symbol: 'theta', name: 'Theta', logo: 'images/theta.png' },
+        { id: 'filecoin', symbol: 'fil', name: 'Filecoin', logo: 'images/fil.png' },
+        { id: 'klay-token', symbol: 'klay', name: 'Klaytn', logo: 'images/klay.png' },
+        { id: 'zilliqa', symbol: 'zil', name: 'Zilliqa', logo: 'images/zil.png' },
+        { id: 'enjincoin', symbol: 'enj', name: 'Enjin', logo: 'images/enj.png' },
+        { id: 'basic-attention-token', symbol: 'bat', name: 'Basic Attention Token', logo: 'images/bat.png' },
+        { id: 'decentraland', symbol: 'mana', name: 'Decentraland', logo: 'images/mana.png' },
+        { id: 'the-sandbox', symbol: 'sand', name: 'The Sandbox', logo: 'images/sand.png' }
+      ];
+
+      const coinsElement = document.getElementById('coins');
+      coinsElement.innerHTML = '';
+
+      // Fetch all coins in a single API call to avoid rate limits
+      const coinIds = coins.map(coin => coin.id).join(',');
+      try {
+        const response = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${coinIds}&vs_currencies=usd&include_24hr_change=true`);
+        if (!response.ok) throw new Error('Failed to fetch data');
+        const data = await response.json();
+
+        coins.forEach(coin => {
+          const price = data[coin.id]?.usd || 'N/A';
+          const change = data[coin.id]?.usd_24h_change || 0;
+
+          coinsElement.innerHTML += `
+            <div class="coin" onclick="showCryptoActions('${coin.name}', '${coin.symbol}')">
+              <img src="${coin.logo}" alt="${coin.name}" onerror="this.src='https://via.placeholder.com/50';">
+              <p>${coin.name} (${coin.symbol.toUpperCase()})</p>
+              <p>$${price}</p>
+              <p class="change ${change >= 0 ? 'positive' : 'negative'}">${change.toFixed(2)}%</p>
+            </div>
+          `;
+        });
+      } catch (error) {
+        console.error('Error fetching crypto data:', error);
+        coinsElement.innerHTML = '<p>Failed to load cryptocurrencies. Please try again later.</p>';
+      }
+    }
+
+    // Filter cryptos based on search input
+    function filterCryptos() {
+      const searchTerm = document.getElementById('search-crypto').value.toLowerCase();
+      const coins = document.querySelectorAll('.crypto-list .coin');
+      coins.forEach(coin => {
+        const name = coin.querySelector('p').textContent.toLowerCase();
+        if (name.includes(searchTerm)) {
+          coin.style.display = 'block';
+        } else {
+          coin.style.display = 'none';
+        }
+      });
+    }
+
+    // Show crypto actions (Send, Receive, Swap)
+    function showCryptoActions(name, symbol) {
+      document.getElementById('crypto-list').style.display = 'none';
+      document.getElementById('crypto-actions').style.display = 'block';
+      document.getElementById('crypto-name').textContent = name;
+      currentCrypto = { name, symbol };
+    }
+
+    // Show crypto list
+    function showCryptoList() {
+      document.getElementById('crypto-actions').style.display = 'none';
+      document.getElementById('send-section').style.display = 'none';
+      document.getElementById('receive-section').style.display = 'none';
+      document.getElementById('swap-section').style.display = 'none';
+      document.getElementById('crypto-list').style.display = 'block';
+    }
+
+    // Show send section
+    function showSendSection() {
+      document.getElementById('crypto-actions').style.display = 'none';
+      document.getElementById('send-section').style.display = 'block';
+      document.getElementById('send-crypto-name').textContent = currentCrypto.name;
+      document.getElementById('send-crypto-logo').src = `images/${currentCrypto.symbol}.png`;
+    }
+
+    // Send crypto
+    function sendCrypto() {
+      const amount = document.getElementById('send-amount').value;
+      const address = document.getElementById('send-address').value;
+
+      if (!amount || !address) {
+        alert('Please fill the fields.');
+        return;
+      }
+
+      alert('Make a deposit first.');
+    }
+
+    // Show receive section
+    function showReceiveSection() {
+      document.getElementById('crypto-actions').style.display = 'none';
+      document.getElementById('receive-section').style.display = 'block';
+      document.getElementById('receive-crypto-name').textContent = currentCrypto.name;
+      document.getElementById('receive-crypto-logo').src = `images/${currentCrypto.symbol}.png`;
+
+      const depositAddresses = {
+        btc: '1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa',
+        eth: '0x742d35Cc6634C0532925a3b844B454e4437f44e2',
+        bnb: 'bnb1qxy2kgdygjrsqtzq2n0yrf2493p83kkfj4x4gw',
+        ada: 'addr1q9...',
+        sol: 'SolanaAddress...',
+        xrp: 'RippleAddress...',
+        doge: 'DogecoinAddress...',
+        dot: 'PolkadotAddress...',
+        uni: 'UniswapAddress...',
+        link: 'ChainlinkAddress...',
+        ltc: 'LitecoinAddress...',
+        bch: 'BitcoinCashAddress...',
+        matic: 'PolygonAddress...',
+        xlm: 'StellarAddress...',
+        vet: 'VeChainAddress...',
+        trx: 'TRONAddress...',
+        ftt: 'FTXTokenAddress...',
+        atom: 'CosmosAddress...',
+        xtz: 'TezosAddress...',
+        usdt: '0x742d35Cc6634C0532925a3b844B454e4437f44e2',
+        avax: 'AvalancheAddress...',
+        algo: 'AlgorandAddress...',
+        neo: 'NEOAddress...',
+        dash: 'DashAddress...',
+        zec: 'ZcashAddress...',
+        xmr: 'MoneroAddress...',
+        eos: 'EOSAddress...',
+        iota: 'IOTAAddress...',
+        waves: 'WavesAddress...',
+        hbar: 'HederaAddress...',
+        icp: 'InternetComputerAddress...',
+        theta: 'ThetaAddress...',
+        fil: 'FilecoinAddress...',
+        klay: 'KlaytnAddress...',
+        zil: 'ZilliqaAddress...',
+        enj: 'EnjinAddress...',
+        bat: 'BasicAttentionTokenAddress...',
+        mana: 'DecentralandAddress...',
+        sand: 'TheSandboxAddress...'
+      };
+
+      document.getElementById('deposit-address').textContent = depositAddresses[currentCrypto.symbol];
+      document.getElementById('qr-image').src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${depositAddresses[currentCrypto.symbol]}`;
+    }
+
+    // Copy deposit address
+    function copyAddress() {
+      const address = document.getElementById('deposit-address').textContent;
+      navigator.clipboard.writeText(address).then(() => {
+        alert('Address copied to clipboard!');
+      });
+    }
+
+    // Show swap section
+    function showSwapSection() {
+      document.getElementById('crypto-actions').style.display = 'none';
+      document.getElementById('swap-section').style.display = 'block';
+      document.getElementById('swap-from-logo').src = `images/${document.getElementById('swap-from').value}.png`;
+      document.getElementById('swap-to-logo').src = `images/${document.getElementById('swap-to').value}.png`;
+    }
+
+    // Swap crypto
+    function swapCrypto() {
+      const amount = document.getElementById('swap-amount').value;
+
+      if (!amount) {
+        alert('Please fill the fields.');
+        return;
+      }
+
+      alert('Make a deposit first.');
+    }
+
+    // Swap direction
+    function swapDirection() {
+      const from = document.getElementById('swap-from').value;
+      const to = document.getElementById('swap-to').value;
+      document.getElementById('swap-from').value = to;
+      document.getElementById('swap-to').value = from;
+      document.getElementById('swap-from-logo').src = `images/${to}.png`;
+      document.getElementById('swap-to-logo').src = `images/${from}.png`;
+    }
+
+    // Upload profile image
+    function uploadImage() {
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = 'image/*';
+      input.onchange = (event) => {
+        const file = event.target.files[0];
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          document.getElementById('profile-icon').src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      };
+      input.click();
+    }
+
+    // Back button functionality for all sections
+    function goBackToCryptoActions() {
+      document.getElementById('send-section').style.display = 'none';
+      document.getElementById('receive-section').style.display = 'none';
+      document.getElementById('swap-section').style.display = 'none';
+      document.getElementById('crypto-actions').style.display = 'block';
+    }
+
+    // Theme Toggle
+    function toggleTheme() {
+      const body = document.body;
+      body.classList.toggle('light-theme');
+      const isLightTheme = body.classList.contains('light-theme');
+      localStorage.setItem('theme', isLightTheme ? 'light' : 'dark');
+    }
+
+    // Apply saved theme
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'light') {
+      document.body.classList.add('light-theme');
+    }
+
+    let currentCrypto = {};
+
+    // Check if already verified
+    if (localStorage.getItem('verified') === 'true') {
+      document.getElementById('secret-phase').style.display = 'none';
+      document.getElementById('account-info').style.display = 'block';
+      document.getElementById('uid').textContent = localStorage.getItem('uid');
+      loadCryptos();
+    }
+   // Update the checkKYCStatus function in account.html
+function checkKYCStatus() {
+  if (localStorage.getItem('kycVerified') === 'true') {
+    // Add verified badge beside UID
+    const uidElement = document.getElementById('uid');
+    const badge = document.createElement('span');
+    badge.className = 'verified-badge';
+    badge.textContent = 'Verified';
+    uidElement.appendChild(badge);
+    
+    // Remove KYC button if it exists
+    const kycButton = document.getElementById('kyc-button');
+    if (kycButton) {
+      kycButton.style.display = 'none';
+    }
+  }
+}
+// Call this function when the page loads
+window.addEventListener('load', function() {
+  if (localStorage.getItem('verified') === 'true') {
+    document.getElementById('secret-phase').style.display = 'none';
+    document.getElementById('account-info').style.display = 'block';
+    document.getElementById('uid').textContent = localStorage.getItem('uid');
+    loadCryptos();
+    checkKYCStatus();
+  }
+});
+  </script>
+</body>
+</html>
